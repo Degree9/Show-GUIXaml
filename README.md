@@ -19,6 +19,6 @@ This module takes a XAML file to display a window on the screen, and provides va
     #Launch the window
     $win1.ShowDialog() | out-null
 
-### Example:
+### Result:
 
 ![](sample.jpg)
