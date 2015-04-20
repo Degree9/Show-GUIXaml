@@ -12,7 +12,14 @@
 
         Creates a new window based on the file sample.xaml, then add an event handler using the button named button1 to add text to the element named textbox1, and finally show the window.
     #>
-    Param([Parameter(Mandatory=$True)][string]$Path = $(throw "The parameter -Path is required."))
+    Param(
+      [Parameter(Mandatory=$True)]
+      [string]$Path = $(throw "The parameter -Path is required."),
+      [Parameter(Mandatory=$False)]
+      [scriptblock]$VarAssignment = {
+        Set-Variable -Name ($_.Name) -Value $window.FindName($_.Name) -Scope Global
+      }
+    )
 
     [xml]$xml = Get-Content -Path $Path
     try
@@ -25,9 +32,7 @@
     }
 
     $window = [Windows.Markup.XamlReader]::Load((new-object System.Xml.XmlNodeReader $xml))
-    $xml.SelectNodes("//*[@Name]") | %{
-        Set-Variable -Name ($_.Name) -Value $window.FindName($_.Name) -Scope Global
-    }
+    $xml.SelectNodes("//*[@Name]") | ForEach-Object $VarAssignment
     $window
 }
 
