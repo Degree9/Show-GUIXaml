@@ -16,12 +16,19 @@
       [Parameter(Mandatory=$True)]
       [string]$Path = $(throw "The parameter -Path is required."),
       [Parameter(Mandatory=$False)]
-      [scriptblock]$VarAssignment = {
-        Set-Variable -Name ($_.Name) -Value $window.FindName($_.Name) -Scope Global
-      }
+      [hashtable]$VarHashtable = @{}
     )
 
-    [xml]$xml = Get-Content -Path $Path
+    If (Test-Path $Path) {
+    
+      [xml]$xml = Get-Content -Path $Path
+
+    }
+    Else {
+
+      throw "The path $Path is invalid."
+
+    }
     try
     {
         Add-Type -AssemblyName PresentationCore,PresentationFramework,WindowsBase,system.windows.forms
@@ -32,7 +39,7 @@
     }
 
     $window = [Windows.Markup.XamlReader]::Load((new-object System.Xml.XmlNodeReader $xml))
-    $xml.SelectNodes("//*[@Name]") | ForEach-Object $VarAssignment
+    $xml.SelectNodes("//*[@Name]") | %{ $VarHashtable.Add($_.Name, $window.FindName($_.Name)) }
     $window
 }
 
