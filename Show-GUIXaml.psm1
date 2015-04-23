@@ -16,7 +16,7 @@
       [Parameter(Mandatory=$True)]
       [string]$Path = $(throw "The parameter -Path is required."),
       [Parameter(Mandatory=$False)]
-      [hashtable][ref]$VarHashtable = @{}
+      [hashtable]$VarHashtable = @{}
     )
 
     If (Test-Path $Path) {
